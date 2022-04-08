@@ -2,16 +2,21 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 
 function MyComponent() {
-  const [userInput, setUserInput] = useState("");
+  const [userInput, setUserInput] = useState("Samuel");
+  const [agifyData, setAgifyData] = useState({});
+
+  const agifyAPI = "https://api.agify.io?name=";
 
   useEffect(() => {
     console.log("userInput updated");
 
     axios
-      .get("https://api.agify.io?name=michael")
+      .get(`${agifyAPI}` + userInput)
       .then(function (response) {
         // handle success
+        setAgifyData(response.data);
         console.log(response);
+        console.log(response.data);
       })
       .catch(function (error) {
         // handle error
@@ -20,7 +25,7 @@ function MyComponent() {
       .then(function () {
         // always executed
       });
-  }, []);
+  }, [userInput]);
 
   function handleKeyDown(e) {
     if (e.key === "Enter") {
@@ -29,9 +34,9 @@ function MyComponent() {
   }
   console.log("User Input: ", userInput);
 
-  function handleInputData(e) {
-    setUserInput(e.target.value);
-  }
+  // agifyAPI.map((obj) => {
+  //   console.log(obj);
+  // });
 
   return (
     <>
