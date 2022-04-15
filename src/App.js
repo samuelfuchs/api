@@ -1,14 +1,11 @@
 import MyComponent from "./main";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 function App() {
   return (
     <>
-      <div>
-        <header>
-          <h1>AI Guess</h1>
-
-          <MyComponent />
-        </header>
+      <div className="d-flex vh-100 align-items-center bg-info bg-gradient">
+        <MyComponent />
       </div>
     </>
   );
