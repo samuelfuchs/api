@@ -5,7 +5,7 @@ function App() {
     <>
       <div>
         <header>
-          <h1>AI Guess my age</h1>
+          <h1>AI Guess</h1>
 
           <MyComponent />
         </header>
