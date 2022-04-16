@@ -16,11 +16,15 @@ import {
 function MyComponent() {
   // API data
   const [agifyData, setAgifyData] = useState({});
+  const [genderizeData, setGenderizeData] = useState([]);
 
   // Loader
   const [agifyLoading, setAgifyLoading] = useState(true);
+  const [genderizeLoading, setGenderizeLoading] = useState(true);
+
   // Error
-  const [error, setError] = useState(false);
+  const [errorAgify, setErrorAgify] = useState(false);
+  const [errorGenderize, setErrorGenderize] = useState(false);
 
   const [inputForAPI, setInputForAPI] = useState("YourName");
 
@@ -30,9 +34,9 @@ function MyComponent() {
   const agifyAPI = "https://api.agify.io?name=";
   const genderizeAPI = "https://api.genderize.io/?name=";
 
-  function fetchData(url, searchData, dataSetter, errorSetter, loaderSetter) {
+  function fetchData(url, dataSetter, errorSetter, loaderSetter) {
     axios
-      .get(`${url}` + searchData, { timeout: 9000 })
+      .get(`${url}` + inputForAPI, { timeout: 9000 })
       .then((response) => {
         dataSetter(response.data);
 
@@ -55,14 +59,21 @@ function MyComponent() {
     } else {
       console.log("subsequent render...");
       setAgifyLoading(true);
-      fetchData(agifyAPI, inputForAPI, setAgifyData, setError, setAgifyLoading);
+      fetchData(agifyAPI, setAgifyData, setErrorAgify, setAgifyLoading);
+      fetchData(
+        genderizeAPI,
+        setGenderizeData,
+        setErrorGenderize,
+        setGenderizeLoading
+      );
     }
   }, [inputForAPI]);
 
   function handleKeyDown(e) {
     if (e.key === "Enter") {
-      if (error) {
-        setError(false);
+      if (errorAgify || errorGenderize) {
+        setErrorAgify(false);
+        setErrorGenderize(false);
       }
       if (agifyLoading) {
         setAgifyLoading(true);
@@ -91,7 +102,10 @@ function MyComponent() {
             </div>
             <br />
             <CardText>
-              {error && <span>Something went wrong!</span>}
+              {errorAgify && <span>Something went wrong with Agify!</span>}
+              {errorGenderize && (
+                <span>Something went wrong with Genderize!</span>
+              )}
               {agifyLoading ? (
                 <>{<Spinner />}</>
               ) : (
@@ -102,6 +116,17 @@ function MyComponent() {
                   <br />
                   {"("}Based on {agifyData.count} results{")"}
                   {/* <strong>{agifyData.count}</strong> entries. */}
+                </>
+              )}
+              {genderizeLoading ? (
+                <>{<Spinner />}</>
+              ) : (
+                <>
+                  <br />
+                  Gender: {genderizeData.gender}
+                  <br />
+                  Probability: {genderizeData.probability}
+                  <br />
                 </>
               )}
             </CardText>
