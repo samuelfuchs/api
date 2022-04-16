@@ -17,14 +17,17 @@ function MyComponent() {
   // API data
   const [agifyData, setAgifyData] = useState({});
   const [genderizeData, setGenderizeData] = useState([]);
+  const [nationalizeData, setNationalizeData] = useState([]);
 
   // Loader
   const [agifyLoading, setAgifyLoading] = useState(true);
   const [genderizeLoading, setGenderizeLoading] = useState(true);
+  const [nationalizeLoading, setNationalizeLoading] = useState(true);
 
   // Error
   const [errorAgify, setErrorAgify] = useState(false);
   const [errorGenderize, setErrorGenderize] = useState(false);
+  const [errorNationalize, setErrorNationalize] = useState(false);
 
   const [inputForAPI, setInputForAPI] = useState("YourName");
 
@@ -33,6 +36,7 @@ function MyComponent() {
   // API routes
   const agifyAPI = "https://api.agify.io?name=";
   const genderizeAPI = "https://api.genderize.io/?name=";
+  const nationalizeAPI = "https://api.nationalize.io?name=";
 
   function fetchData(url, dataSetter, errorSetter, loaderSetter) {
     axios
@@ -66,21 +70,31 @@ function MyComponent() {
         setErrorGenderize,
         setGenderizeLoading
       );
+      fetchData(
+        nationalizeAPI,
+        setNationalizeData,
+        setErrorGenderize,
+        setNationalizeLoading
+      );
     }
   }, [inputForAPI]);
 
   function handleKeyDown(e) {
     if (e.key === "Enter") {
-      if (errorAgify || errorGenderize) {
-        setErrorAgify(false);
-        setErrorGenderize(false);
-      }
+      setErrorAgify(false);
+      setErrorGenderize(false);
+      setErrorNationalize(false);
+
       if (agifyLoading) {
         setAgifyLoading(true);
+        setGenderizeLoading(true);
+        setNationalizeLoading(true);
       }
       setInputForAPI(e.target.value);
     }
   }
+
+  console.log(nationalizeData.country);
 
   return (
     <>
@@ -106,6 +120,9 @@ function MyComponent() {
               {errorGenderize && (
                 <span>Something went wrong with Genderize!</span>
               )}
+              {errorNationalize && (
+                <span>Something went wrong with Nationalize!</span>
+              )}
               {agifyLoading ? (
                 <>{<Spinner />}</>
               ) : (
@@ -125,8 +142,23 @@ function MyComponent() {
                   <br />
                   Gender: {genderizeData.gender}
                   <br />
-                  Probability: {genderizeData.probability}
+                  Probability: {genderizeData.probability * 100}%
                   <br />
+                </>
+              )}
+              {nationalizeLoading ? (
+                <>{<Spinner />}</>
+              ) : (
+                <>
+                  <br />
+
+                  {nationalizeData.country.map((country, index) => (
+                    <>
+                      Country {index + 1}: {country.country_id}{" "}
+                      {(country.probability * 100).toFixed(2)}%
+                      <br />
+                    </>
+                  ))}
                 </>
               )}
             </CardText>
