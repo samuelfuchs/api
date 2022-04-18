@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
+import { nanoid } from "nanoid";
 import {
   Card,
   CardBody,
@@ -18,6 +19,7 @@ function MyComponent() {
   const [agifyData, setAgifyData] = useState({});
   const [genderizeData, setGenderizeData] = useState([]);
   const [nationalizeData, setNationalizeData] = useState([]);
+  const [nationalizeParsedData, setNationalizeParsedData] = useState([]);
 
   // Loader
   const [agifyLoading, setAgifyLoading] = useState(true);
@@ -31,7 +33,7 @@ function MyComponent() {
 
   const [inputForAPI, setInputForAPI] = useState("YourName");
 
-  const initialRender = useRef(true);
+  const initialRender = useRef(0);
 
   // API routes
   const agifyAPI = "https://api.agify.io?name=";
@@ -57,19 +59,24 @@ function MyComponent() {
 
   useEffect(() => {
     console.log(initialRender.current);
-    if (initialRender.current) {
-      console.log("first render");
-      initialRender.current = false;
-    } else {
+    if (initialRender.current <= 1) {
+      initialRender.current++;
+      console.log("first render", initialRender.current);
+      setAgifyLoading(false);
+      setGenderizeLoading(false);
+      setNationalizeLoading(false);
+    } else if (initialRender.current > 1) {
       console.log("subsequent render...");
-      setAgifyLoading(true);
+
       fetchData(agifyAPI, setAgifyData, setErrorAgify, setAgifyLoading);
+
       fetchData(
         genderizeAPI,
         setGenderizeData,
         setErrorGenderize,
         setGenderizeLoading
       );
+
       fetchData(
         nationalizeAPI,
         setNationalizeData,
@@ -94,7 +101,49 @@ function MyComponent() {
     }
   }
 
-  console.log(nationalizeData.country);
+  class Country {
+    constructor(id, counter, country_id, probability) {
+      this.id = id;
+      this.counter = counter;
+      this.country_id = country_id;
+      this.probability = probability;
+    }
+  }
+
+  useEffect(() => {
+    if (initialRender.current > 2) {
+      console.log(nationalizeData);
+      const countries = nationalizeData.country.map((item, index) => {
+        const nanoID = nanoid(4);
+        const countryCounter = index + 1;
+        // console.log(
+        //   "nanoID: ",
+        //   nanoID,
+        //   "\n",
+        //   "counter: ",
+        //   countryCounter,
+        //   "N",
+        //   "country_id: ",
+        //   item.country_id,
+        //   "\n",
+        //   "probability: ",
+        //   item.probability,
+        //   "\n",
+        //   "index: ",
+        //   index
+        // );
+
+        return new Country(
+          nanoID,
+          countryCounter,
+          item.country_id,
+          item.probability
+        );
+      });
+      setNationalizeParsedData(countries);
+    }
+  }, [nationalizeData]);
+  // console.log(nationalizeParsedData);
 
   return (
     <>
@@ -152,13 +201,13 @@ function MyComponent() {
                 <>
                   <br />
 
-                  {nationalizeData.country.map((country, index) => (
+                  {/* {nationalizeData.country.map((country, index) => (
                     <>
                       Country {index + 1}: {country.country_id}{" "}
                       {(country.probability * 100).toFixed(2)}%
                       <br />
                     </>
-                  ))}
+                  ))} */}
                 </>
               )}
             </CardText>
