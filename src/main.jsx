@@ -116,22 +116,6 @@ function MyComponent() {
       const countries = nationalizeData.country.map((item, index) => {
         const nanoID = nanoid(4);
         const countryCounter = index + 1;
-        // console.log(
-        //   "nanoID: ",
-        //   nanoID,
-        //   "\n",
-        //   "counter: ",
-        //   countryCounter,
-        //   "N",
-        //   "country_id: ",
-        //   item.country_id,
-        //   "\n",
-        //   "probability: ",
-        //   item.probability,
-        //   "\n",
-        //   "index: ",
-        //   index
-        // );
 
         return new Country(
           nanoID,
@@ -143,7 +127,6 @@ function MyComponent() {
       setNationalizeParsedData(countries);
     }
   }, [nationalizeData]);
-  // console.log(nationalizeParsedData);
 
   return (
     <>
